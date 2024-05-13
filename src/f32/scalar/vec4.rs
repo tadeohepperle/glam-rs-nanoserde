@@ -12,6 +12,9 @@ use core::fmt;
 use core::iter::{Product, Sum};
 use core::{f32, ops::*};
 
+#[cfg(feature = "nanoserde")]
+use nanoserde::{DeBin, DeJson, SerBin, SerJson};
+
 /// Creates a 4-dimensional vector.
 #[inline(always)]
 #[must_use]
@@ -30,6 +33,7 @@ pub const fn vec4(x: f32, y: f32, z: f32, w: f32) -> Vec4 {
 )]
 #[cfg_attr(not(target_arch = "spirv"), repr(C))]
 #[cfg_attr(target_arch = "spirv", repr(simd))]
+#[cfg_attr(feature = "nanoserde", derive(DeJson, SerJson, DeBin, SerBin))]
 pub struct Vec4 {
     pub x: f32,
     pub y: f32,

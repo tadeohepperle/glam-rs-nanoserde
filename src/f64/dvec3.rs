@@ -7,6 +7,9 @@ use core::fmt;
 use core::iter::{Product, Sum};
 use core::{f32, ops::*};
 
+#[cfg(feature = "nanoserde")]
+use nanoserde::{DeBin, DeJson, SerBin, SerJson};
+
 /// Creates a 3-dimensional vector.
 #[inline(always)]
 #[must_use]
@@ -18,6 +21,7 @@ pub const fn dvec3(x: f64, y: f64, z: f64) -> DVec3 {
 #[derive(Clone, Copy, PartialEq)]
 #[cfg_attr(not(target_arch = "spirv"), repr(C))]
 #[cfg_attr(target_arch = "spirv", repr(simd))]
+#[cfg_attr(feature = "nanoserde", derive(DeJson, SerJson, DeBin, SerBin))]
 pub struct DVec3 {
     pub x: f64,
     pub y: f64,

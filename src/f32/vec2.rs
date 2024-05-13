@@ -2,6 +2,9 @@
 
 use crate::{f32::math, BVec2, Vec3};
 
+#[cfg(feature = "nanoserde")]
+use nanoserde::{DeBin, DeJson, SerBin, SerJson};
+
 #[cfg(not(target_arch = "spirv"))]
 use core::fmt;
 use core::iter::{Product, Sum};
@@ -19,6 +22,7 @@ pub const fn vec2(x: f32, y: f32) -> Vec2 {
 #[cfg_attr(feature = "cuda", repr(align(8)))]
 #[cfg_attr(not(target_arch = "spirv"), repr(C))]
 #[cfg_attr(target_arch = "spirv", repr(simd))]
+#[cfg_attr(feature = "nanoserde", derive(DeJson, SerJson, DeBin, SerBin))]
 pub struct Vec2 {
     pub x: f32,
     pub y: f32,

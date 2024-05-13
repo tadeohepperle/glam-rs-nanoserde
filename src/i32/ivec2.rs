@@ -7,6 +7,9 @@ use core::fmt;
 use core::iter::{Product, Sum};
 use core::{f32, ops::*};
 
+#[cfg(feature = "nanoserde")]
+use nanoserde::{DeBin, DeJson, SerBin, SerJson};
+
 /// Creates a 2-dimensional vector.
 #[inline(always)]
 #[must_use]
@@ -20,6 +23,7 @@ pub const fn ivec2(x: i32, y: i32) -> IVec2 {
 #[cfg_attr(feature = "cuda", repr(align(8)))]
 #[cfg_attr(not(target_arch = "spirv"), repr(C))]
 #[cfg_attr(target_arch = "spirv", repr(simd))]
+#[cfg_attr(feature = "nanoserde", derive(DeJson, SerJson, DeBin, SerBin))]
 pub struct IVec2 {
     pub x: i32,
     pub y: i32,
