@@ -27,3 +27,6 @@ pub mod impl_zerocopy;
 
 #[cfg(feature = "arbitrary")]
 pub mod impl_arbitrary;
+
+#[cfg(feature = "nanoserde")]
+pub mod impl_nanoserde;

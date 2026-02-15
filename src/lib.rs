@@ -277,7 +277,6 @@ The minimum supported Rust version is `1.68.2`.
 #![cfg_attr(target_arch = "wasm64", feature(simd_wasm64))]
 #![deny(
     rust_2018_compatibility,
-    rust_2018_idioms,
     future_incompatible,
     nonstandard_style
 )]

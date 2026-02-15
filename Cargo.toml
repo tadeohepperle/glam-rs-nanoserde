@@ -1,6 +1,6 @@
 [package]
 name = "glam"
-version = "0.32.0" # remember to update html_root_url
+version = "0.32.0"                                                       # remember to update html_root_url
 edition = "2021"
 authors = ["Cameron Hart <cameron.hart@gmail.com>"]
 description = "A simple and fast 3D math library for games and graphics"
@@ -15,7 +15,7 @@ rust-version = "1.68.2"
 maintenance = { status = "actively-developed" }
 
 [features]
-default = ["std"]
+default = ["std", "nanoserde"]
 
 # enable support for the standard library
 std = []
@@ -40,6 +40,8 @@ fast-math = []
 
 serde = ["dep:serde_core"]
 
+nanoserde = ["dep:nanoserde"]
+
 # experimental nightly portable-simd support
 core-simd = ["bytemuck?/nightly_portable_simd"]
 
@@ -59,6 +61,7 @@ bytemuck = { version = "1.9", optional = true, default-features = false, feature
 mint = { version = "0.5.8", optional = true, default-features = false }
 rand = { version = "0.10", optional = true, default-features = false }
 serde_core = { version = "1.0", optional = true, default-features = false }
+nanoserde = { git = "https://github.com/tadeohepperle/nanoserde", optional = true }
 rkyv = { version = "0.8", optional = true, default-features = false }
 libm = { version = "0.2", optional = true, default-features = false }
 speedy = { version = "0.8", optional = true, default-features = false }
@@ -137,11 +140,7 @@ name = "gungraun"
 harness = false
 
 [workspace]
-members = [
-    "codegen",
-    "swizzlegen",
-    "test_no_std",
-]
+members = ["codegen", "swizzlegen", "test_no_std"]
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_arch, values("spirv"))'] }
