@@ -54,8 +54,8 @@ macro_rules! impl_affine2_tests {
         glam_test!(test_affine2_from_mat2, {
             let m = $mat2::from_cols_array_2d(&[MATRIX2D[0], MATRIX2D[1]]);
             let a = $affine2::from_mat2(m);
-            assert_eq!(m, a.matrix2);
-            assert_eq!($vec2::ZERO, a.translation);
+            assert_eq!(m, a.mat);
+            assert_eq!($vec2::ZERO, a.pos);
 
             let t = $vec2::from_array(MATRIX2D[2]);
             let a = $affine2::from_mat2_translation(m, t);
@@ -72,7 +72,7 @@ macro_rules! impl_affine2_tests {
 
         glam_test!(test_affine2_translation, {
             let translate = $affine2::from_translation($vec2::new(1.0, 2.0));
-            assert_eq!(translate.translation, $vec2::new(1.0, 2.0).into());
+            assert_eq!(translate.pos, $vec2::new(1.0, 2.0).into());
             assert_eq!(
                 translate.transform_point2($vec2::new(2.0, 3.0)),
                 $vec2::new(3.0, 5.0),
@@ -298,8 +298,8 @@ mod affine2 {
         #[inline]
         fn abs_diff(&self, other: &Self) -> Self {
             Self {
-                matrix2: self.matrix2.abs_diff(&other.matrix2),
-                translation: self.translation.abs_diff(&other.translation),
+                mat: self.mat.abs_diff(&other.mat),
+                pos: self.pos.abs_diff(&other.pos),
             }
         }
     }
@@ -350,8 +350,8 @@ mod daffine2 {
         #[inline]
         fn abs_diff(&self, other: &Self) -> Self {
             Self {
-                matrix2: self.matrix2.abs_diff(&other.matrix2),
-                translation: self.translation.abs_diff(&other.translation),
+                mat: self.mat.abs_diff(&other.mat),
+                pos: self.pos.abs_diff(&other.pos),
             }
         }
     }

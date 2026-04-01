@@ -15,8 +15,8 @@ use zerocopy_derive::*;
 )]
 #[repr(C)]
 pub struct DAffine2 {
-    pub matrix2: DMat2,
-    pub translation: DVec2,
+    pub mat: DMat2,
+    pub pos: DVec2,
 }
 
 impl DAffine2 {
@@ -25,22 +25,22 @@ impl DAffine2 {
     /// This transforms any finite vector and point to zero.
     /// The zero transform is non-invertible.
     pub const ZERO: Self = Self {
-        matrix2: DMat2::ZERO,
-        translation: DVec2::ZERO,
+        mat: DMat2::ZERO,
+        pos: DVec2::ZERO,
     };
 
     /// The identity transform.
     ///
     /// Multiplying a vector with this returns the same vector.
     pub const IDENTITY: Self = Self {
-        matrix2: DMat2::IDENTITY,
-        translation: DVec2::ZERO,
+        mat: DMat2::IDENTITY,
+        pos: DVec2::ZERO,
     };
 
     /// All NAN:s.
     pub const NAN: Self = Self {
-        matrix2: DMat2::NAN,
-        translation: DVec2::NAN,
+        mat: DMat2::NAN,
+        pos: DVec2::NAN,
     };
 
     /// Creates an affine transform from three column vectors.
@@ -48,8 +48,8 @@ impl DAffine2 {
     #[must_use]
     pub const fn from_cols(x_axis: DVec2, y_axis: DVec2, z_axis: DVec2) -> Self {
         Self {
-            matrix2: DMat2::from_cols(x_axis, y_axis),
-            translation: z_axis,
+            mat: DMat2::from_cols(x_axis, y_axis),
+            pos: z_axis,
         }
     }
 
@@ -58,8 +58,8 @@ impl DAffine2 {
     #[must_use]
     pub fn from_cols_array(m: &[f64; 6]) -> Self {
         Self {
-            matrix2: DMat2::from_cols_array(&[m[0], m[1], m[2], m[3]]),
-            translation: DVec2::from_array([m[4], m[5]]),
+            mat: DMat2::from_cols_array(&[m[0], m[1], m[2], m[3]]),
+            pos: DVec2::from_array([m[4], m[5]]),
         }
     }
 
@@ -67,9 +67,9 @@ impl DAffine2 {
     #[inline]
     #[must_use]
     pub fn to_cols_array(&self) -> [f64; 6] {
-        let x = &self.matrix2.x_axis;
-        let y = &self.matrix2.y_axis;
-        let z = &self.translation;
+        let x = &self.mat.x_axis;
+        let y = &self.mat.y_axis;
+        let z = &self.pos;
         [x.x, x.y, y.x, y.y, z.x, z.y]
     }
 
@@ -81,8 +81,8 @@ impl DAffine2 {
     #[must_use]
     pub fn from_cols_array_2d(m: &[[f64; 2]; 3]) -> Self {
         Self {
-            matrix2: DMat2::from_cols(m[0].into(), m[1].into()),
-            translation: m[2].into(),
+            mat: DMat2::from_cols(m[0].into(), m[1].into()),
+            pos: m[2].into(),
         }
     }
 
@@ -93,9 +93,9 @@ impl DAffine2 {
     #[must_use]
     pub fn to_cols_array_2d(&self) -> [[f64; 2]; 3] {
         [
-            self.matrix2.x_axis.into(),
-            self.matrix2.y_axis.into(),
-            self.translation.into(),
+            self.mat.x_axis.into(),
+            self.mat.y_axis.into(),
+            self.pos.into(),
         ]
     }
 
@@ -108,8 +108,8 @@ impl DAffine2 {
     #[must_use]
     pub fn from_cols_slice(slice: &[f64]) -> Self {
         Self {
-            matrix2: DMat2::from_cols_slice(&slice[0..4]),
-            translation: DVec2::from_slice(&slice[4..6]),
+            mat: DMat2::from_cols_slice(&slice[0..4]),
+            pos: DVec2::from_slice(&slice[4..6]),
         }
     }
 
@@ -120,8 +120,8 @@ impl DAffine2 {
     /// Panics if `slice` is less than 6 elements long.
     #[inline]
     pub fn write_cols_to_slice(&self, slice: &mut [f64]) {
-        self.matrix2.write_cols_to_slice(&mut slice[0..4]);
-        self.translation.write_to_slice(&mut slice[4..6]);
+        self.mat.write_cols_to_slice(&mut slice[0..4]);
+        self.pos.write_to_slice(&mut slice[4..6]);
     }
 
     /// Creates an affine transform that changes scale.
@@ -130,8 +130,8 @@ impl DAffine2 {
     #[must_use]
     pub fn from_scale(scale: DVec2) -> Self {
         Self {
-            matrix2: DMat2::from_diagonal(scale),
-            translation: DVec2::ZERO,
+            mat: DMat2::from_diagonal(scale),
+            pos: DVec2::ZERO,
         }
     }
 
@@ -140,8 +140,8 @@ impl DAffine2 {
     #[must_use]
     pub fn from_angle(angle: f64) -> Self {
         Self {
-            matrix2: DMat2::from_angle(angle),
-            translation: DVec2::ZERO,
+            mat: DMat2::from_angle(angle),
+            pos: DVec2::ZERO,
         }
     }
 
@@ -150,8 +150,8 @@ impl DAffine2 {
     #[must_use]
     pub fn from_translation(translation: DVec2) -> Self {
         Self {
-            matrix2: DMat2::IDENTITY,
-            translation,
+            mat: DMat2::IDENTITY,
+            pos: translation,
         }
     }
 
@@ -160,8 +160,8 @@ impl DAffine2 {
     #[must_use]
     pub fn from_mat2(matrix2: DMat2) -> Self {
         Self {
-            matrix2,
-            translation: DVec2::ZERO,
+            mat: matrix2,
+            pos: DVec2::ZERO,
         }
     }
 
@@ -174,8 +174,8 @@ impl DAffine2 {
     #[must_use]
     pub fn from_mat2_translation(matrix2: DMat2, translation: DVec2) -> Self {
         Self {
-            matrix2,
-            translation,
+            mat: matrix2,
+            pos: translation,
         }
     }
 
@@ -189,8 +189,8 @@ impl DAffine2 {
     pub fn from_scale_angle_translation(scale: DVec2, angle: f64, translation: DVec2) -> Self {
         let rotation = DMat2::from_angle(angle);
         Self {
-            matrix2: DMat2::from_cols(rotation.x_axis * scale.x, rotation.y_axis * scale.y),
-            translation,
+            mat: DMat2::from_cols(rotation.x_axis * scale.x, rotation.y_axis * scale.y),
+            pos: translation,
         }
     }
 
@@ -202,8 +202,8 @@ impl DAffine2 {
     #[must_use]
     pub fn from_angle_translation(angle: f64, translation: DVec2) -> Self {
         Self {
-            matrix2: DMat2::from_angle(angle),
-            translation,
+            mat: DMat2::from_angle(angle),
+            pos: translation,
         }
     }
 
@@ -213,8 +213,8 @@ impl DAffine2 {
     pub fn from_mat3(m: DMat3) -> Self {
         use crate::swizzles::Vec3Swizzles;
         Self {
-            matrix2: DMat2::from_cols(m.x_axis.xy(), m.y_axis.xy()),
-            translation: m.z_axis.xy(),
+            mat: DMat2::from_cols(m.x_axis.xy(), m.y_axis.xy()),
+            pos: m.z_axis.xy(),
         }
     }
 
@@ -231,26 +231,26 @@ impl DAffine2 {
     #[must_use]
     pub fn to_scale_angle_translation(&self) -> (DVec2, f64, DVec2) {
         use crate::f64::math;
-        let det = self.matrix2.determinant();
+        let det = self.mat.determinant();
         glam_assert!(det != 0.0);
 
         let scale = DVec2::new(
-            self.matrix2.x_axis.length() * math::signum(det),
-            self.matrix2.y_axis.length(),
+            self.mat.x_axis.length() * math::signum(det),
+            self.mat.y_axis.length(),
         );
 
         glam_assert!(scale.cmpne(DVec2::ZERO).all());
 
-        let angle = math::atan2(-self.matrix2.y_axis.x, self.matrix2.y_axis.y);
+        let angle = math::atan2(-self.mat.y_axis.x, self.mat.y_axis.y);
 
-        (scale, angle, self.translation)
+        (scale, angle, self.pos)
     }
 
     /// Transforms the given 2D point, applying shear, scale, rotation and translation.
     #[inline]
     #[must_use]
     pub fn transform_point2(&self, rhs: DVec2) -> DVec2 {
-        self.matrix2 * rhs + self.translation
+        self.mat * rhs + self.pos
     }
 
     /// Transforms the given 2D vector, applying shear, scale and rotation (but NOT
@@ -259,7 +259,7 @@ impl DAffine2 {
     /// To also apply translation, use [`Self::transform_point2()`] instead.
     #[inline]
     pub fn transform_vector2(&self, rhs: DVec2) -> DVec2 {
-        self.matrix2 * rhs
+        self.mat * rhs
     }
 
     /// Returns `true` if, and only if, all elements are finite.
@@ -269,14 +269,14 @@ impl DAffine2 {
     #[inline]
     #[must_use]
     pub fn is_finite(&self) -> bool {
-        self.matrix2.is_finite() && self.translation.is_finite()
+        self.mat.is_finite() && self.pos.is_finite()
     }
 
     /// Returns `true` if any elements are `NaN`.
     #[inline]
     #[must_use]
     pub fn is_nan(&self) -> bool {
-        self.matrix2.is_nan() || self.translation.is_nan()
+        self.mat.is_nan() || self.pos.is_nan()
     }
 
     /// Returns true if the absolute difference of all elements between `self` and `rhs`
@@ -291,8 +291,7 @@ impl DAffine2 {
     #[inline]
     #[must_use]
     pub fn abs_diff_eq(&self, rhs: Self, max_abs_diff: f64) -> bool {
-        self.matrix2.abs_diff_eq(rhs.matrix2, max_abs_diff)
-            && self.translation.abs_diff_eq(rhs.translation, max_abs_diff)
+        self.mat.abs_diff_eq(rhs.mat, max_abs_diff) && self.pos.abs_diff_eq(rhs.pos, max_abs_diff)
     }
 
     /// Return the inverse of this transform.
@@ -301,13 +300,13 @@ impl DAffine2 {
     #[inline]
     #[must_use]
     pub fn inverse(&self) -> Self {
-        let matrix2 = self.matrix2.inverse();
+        let matrix2 = self.mat.inverse();
         // transform negative translation by the matrix inverse:
-        let translation = -(matrix2 * self.translation);
+        let translation = -(matrix2 * self.pos);
 
         Self {
-            matrix2,
-            translation,
+            mat: matrix2,
+            pos: translation,
         }
     }
 
@@ -315,7 +314,7 @@ impl DAffine2 {
     #[inline]
     #[must_use]
     pub fn as_affine2(&self) -> crate::Affine2 {
-        crate::Affine2::from_mat2_translation(self.matrix2.as_mat2(), self.translation.as_vec2())
+        crate::Affine2::from_mat2_translation(self.mat.as_mat2(), self.pos.as_vec2())
     }
 }
 
@@ -344,15 +343,15 @@ impl DerefMut for DAffine2 {
 impl PartialEq for DAffine2 {
     #[inline]
     fn eq(&self, rhs: &Self) -> bool {
-        self.matrix2.eq(&rhs.matrix2) && self.translation.eq(&rhs.translation)
+        self.mat.eq(&rhs.mat) && self.pos.eq(&rhs.pos)
     }
 }
 
 impl core::fmt::Debug for DAffine2 {
     fn fmt(&self, fmt: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         fmt.debug_struct(stringify!(DAffine2))
-            .field("matrix2", &self.matrix2)
-            .field("translation", &self.translation)
+            .field("matrix2", &self.mat)
+            .field("translation", &self.pos)
             .finish()
     }
 }
@@ -363,13 +362,13 @@ impl core::fmt::Display for DAffine2 {
             write!(
                 f,
                 "[{:.*}, {:.*}, {:.*}]",
-                p, self.matrix2.x_axis, p, self.matrix2.y_axis, p, self.translation
+                p, self.mat.x_axis, p, self.mat.y_axis, p, self.pos
             )
         } else {
             write!(
                 f,
                 "[{}, {}, {}]",
-                self.matrix2.x_axis, self.matrix2.y_axis, self.translation
+                self.mat.x_axis, self.mat.y_axis, self.pos
             )
         }
     }
@@ -390,8 +389,8 @@ impl Mul for DAffine2 {
     #[inline]
     fn mul(self, rhs: Self) -> Self {
         Self {
-            matrix2: self.matrix2 * rhs.matrix2,
-            translation: self.matrix2 * rhs.translation + self.translation,
+            mat: self.mat * rhs.mat,
+            pos: self.mat * rhs.pos + self.pos,
         }
     }
 }
@@ -438,9 +437,9 @@ impl From<DAffine2> for DMat3 {
     #[inline]
     fn from(m: DAffine2) -> Self {
         Self::from_cols(
-            m.matrix2.x_axis.extend(0.0),
-            m.matrix2.y_axis.extend(0.0),
-            m.translation.extend(1.0),
+            m.mat.x_axis.extend(0.0),
+            m.mat.y_axis.extend(0.0),
+            m.pos.extend(1.0),
         )
     }
 }
