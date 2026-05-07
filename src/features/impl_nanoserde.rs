@@ -17,11 +17,11 @@ macro_rules! impl_serde_vec2 {
         }
 
         impl nanoserde::SerJson for $vec2 {
-            fn ser_json(&self, d: usize, s: &mut nanoserde::SerJsonState) {
+            fn ser_json(&self, s: &mut nanoserde::SerJsonState) {
                 s.out.push('[');
-                self.x.ser_json(d, s);
+                self.x.ser_json(s);
                 s.out.push(',');
-                self.y.ser_json(d, s);
+                self.y.ser_json(s);
                 s.out.push(']');
             }
         }
@@ -70,13 +70,13 @@ macro_rules! impl_serde_vec3 {
         }
 
         impl nanoserde::SerJson for $vec3 {
-            fn ser_json(&self, d: usize, s: &mut nanoserde::SerJsonState) {
+            fn ser_json(&self, s: &mut nanoserde::SerJsonState) {
                 s.out.push('[');
-                self.x.ser_json(d, s);
+                self.x.ser_json(s);
                 s.out.push(',');
-                self.y.ser_json(d, s);
+                self.y.ser_json(s);
                 s.out.push(',');
-                self.z.ser_json(d, s);
+                self.z.ser_json(s);
                 s.out.push(']');
             }
         }
@@ -125,15 +125,15 @@ macro_rules! impl_serde_vec4 {
         }
 
         impl nanoserde::SerJson for $vec4 {
-            fn ser_json(&self, d: usize, s: &mut nanoserde::SerJsonState) {
+            fn ser_json(&self, s: &mut nanoserde::SerJsonState) {
                 s.out.push('[');
-                self.x.ser_json(d, s);
+                self.x.ser_json(s);
                 s.out.push(',');
-                self.y.ser_json(d, s);
+                self.y.ser_json(s);
                 s.out.push(',');
-                self.z.ser_json(d, s);
+                self.z.ser_json(s);
                 s.out.push(',');
-                self.w.ser_json(d, s);
+                self.w.ser_json(s);
                 s.out.push(']');
             }
         }
@@ -184,15 +184,15 @@ macro_rules! impl_serde_quat {
         }
 
         impl nanoserde::SerJson for $quat {
-            fn ser_json(&self, d: usize, s: &mut nanoserde::SerJsonState) {
+            fn ser_json(&self, s: &mut nanoserde::SerJsonState) {
                 s.out.push('[');
-                self.x.ser_json(d, s);
+                self.x.ser_json(s);
                 s.out.push(',');
-                self.y.ser_json(d, s);
+                self.y.ser_json(s);
                 s.out.push(',');
-                self.z.ser_json(d, s);
+                self.z.ser_json(s);
                 s.out.push(',');
-                self.w.ser_json(d, s);
+                self.w.ser_json(s);
                 s.out.push(']');
             }
         }
@@ -243,16 +243,16 @@ macro_rules! impl_serde_mat2 {
         }
 
         impl nanoserde::SerJson for $mat2 {
-            fn ser_json(&self, d: usize, s: &mut nanoserde::SerJsonState) {
+            fn ser_json(&self, s: &mut nanoserde::SerJsonState) {
                 let cols: [$t; 4] = self.to_cols_array();
                 s.out.push('[');
-                cols[0].ser_json(d, s);
+                cols[0].ser_json(s);
                 s.out.push(',');
-                cols[1].ser_json(d, s);
+                cols[1].ser_json(s);
                 s.out.push(',');
-                cols[2].ser_json(d, s);
+                cols[2].ser_json(s);
                 s.out.push(',');
-                cols[3].ser_json(d, s);
+                cols[3].ser_json(s);
                 s.out.push(']');
             }
         }
@@ -318,11 +318,11 @@ macro_rules! impl_serde_mat3 {
         }
 
         impl nanoserde::SerJson for $mat3 {
-            fn ser_json(&self, d: usize, s: &mut nanoserde::SerJsonState) {
+            fn ser_json(&self, s: &mut nanoserde::SerJsonState) {
                 let cols: [$t; 9] = self.to_cols_array();
                 s.out.push('[');
                 for i in 0..9 {
-                    cols[i].ser_json(d, s);
+                    cols[i].ser_json(s);
                     if i != 8 {
                         s.out.push(',');
                     }
@@ -379,11 +379,11 @@ macro_rules! impl_serde_mat4 {
         }
 
         impl nanoserde::SerJson for $mat4 {
-            fn ser_json(&self, d: usize, s: &mut nanoserde::SerJsonState) {
+            fn ser_json(&self, s: &mut nanoserde::SerJsonState) {
                 let cols: [$t; 16] = self.to_cols_array();
                 s.out.push('[');
                 for i in 0..16 {
-                    cols[i].ser_json(d, s);
+                    cols[i].ser_json(s);
                     if i != 15 {
                         s.out.push(',');
                     }
@@ -450,11 +450,11 @@ macro_rules! impl_serde_affine2 {
         }
 
         impl nanoserde::SerJson for $affine2 {
-            fn ser_json(&self, d: usize, s: &mut nanoserde::SerJsonState) {
+            fn ser_json(&self, s: &mut nanoserde::SerJsonState) {
                 let cols: [$t; 6] = self.to_cols_array();
                 s.out.push('[');
                 for i in 0..6 {
-                    cols[i].ser_json(d, s);
+                    cols[i].ser_json(s);
                     if i != 5 {
                         s.out.push(',');
                     }
@@ -516,11 +516,11 @@ macro_rules! impl_serde_affine3 {
         }
 
         impl nanoserde::SerJson for $affine3 {
-            fn ser_json(&self, d: usize, s: &mut nanoserde::SerJsonState) {
+            fn ser_json(&self, s: &mut nanoserde::SerJsonState) {
                 let cols: [$t; 12] = self.to_cols_array();
                 s.out.push('[');
                 for i in 0..12 {
-                    cols[i].ser_json(d, s);
+                    cols[i].ser_json(s);
                     if i != 11 {
                         s.out.push(',');
                     }
@@ -831,7 +831,6 @@ mod u64 {
     #[cfg(test)]
     use super::test_u64::*;
     use crate::{U64Vec2, U64Vec3, U64Vec4};
-    use core::fmt;
     use nanoserde::{DeJson, SerJson};
 
     impl_serde_vec_types!(u64, U64Vec2, U64Vec3, U64Vec4);
